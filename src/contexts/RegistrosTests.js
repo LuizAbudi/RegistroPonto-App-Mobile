@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 
 export const RegistersTestsContext = createContext({});
 
@@ -61,8 +61,14 @@ function RegistersTestsProvider({ children }) {
     setRegistros(initialRegisters);
   }, []);
 
+  const returnRegisters = useCallback(() => {
+    return registros;
+  }, [registros]);
+
   return (
-    <RegistersTestsContext.Provider value={{ registros, setRegistros }}>
+    <RegistersTestsContext.Provider
+      value={{ registros: returnRegisters, setRegistros }}
+    >
       {children}
     </RegistersTestsContext.Provider>
   );
