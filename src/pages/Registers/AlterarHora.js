@@ -23,17 +23,17 @@ import SelectDropDown from "../../components/SelectDropDown";
 import { RegistersTestsContext } from "../../contexts/RegistrosTests";
 
 const AlterarHora = () => {
-  const { registros, setRegistros } = useContext(RegistersTestsContext);
+  const { registros, setRegistros, uniqueMonths } = useContext(
+    RegistersTestsContext
+  );
 
-  console.log(registros);
+  //console.log(registros);
 
   const navigation = useNavigation();
 
   const handleBack = () => {
     navigation.goBack();
   };
-
-  const [modalSelectMes, setModalSelectMes] = useState(false);
 
   const [modalTimeVisible, setModalVisible] = useState(false);
   const [selectedRegistro, setSelectedRegistro] = useState(null);
@@ -70,59 +70,72 @@ const AlterarHora = () => {
     setTimeMode(currentMode);
   };
 
+  // console.log(`registros antigos: ${}`);
+
   const saveChanges = () => {
     if (selectedRegistro && selectedIndex !== null) {
-      const updateRegistros = [...registros];
+      let updateRegistros = [...registros];
 
-      updateRegistros[selectedIndex] = selectedRegistro;
+      // Remove o registro antigo
+      updateRegistros.splice(selectedIndex, 1);
+
+      // Encontre a posição correta para o novo registro
+      let insertIndex = updateRegistros.findIndex((r) => {
+        let [dia1, mes1, ano1] = r.data.split("/").map(Number);
+        let [dia2, mes2, ano2] = selectedRegistro.data.split("/").map(Number);
+        return new Date(ano1, mes1 - 1, dia1) > new Date(ano2, mes2 - 1, dia2);
+      });
+
+      // Verifique se já existe um registro com a mesma data
+      let existingIndex = updateRegistros.findIndex(
+        (r) => r.data === selectedRegistro.data
+      );
+
+      if (existingIndex !== -1) {
+        updateRegistros[existingIndex] = selectedRegistro;
+      } else {
+        if (insertIndex === -1) {
+          insertIndex = updateRegistros.length;
+        }
+        // Insira o novo registro na posição correta
+        updateRegistros.splice(insertIndex, 0, selectedRegistro);
+      }
 
       setRegistros(updateRegistros);
 
       setSelectedIndex(null);
       setSelectedRegistro(null);
       setModalVisible(false);
+
+      console.log(updateRegistros);
     }
   };
 
-  const [mesesDisponiveis, setMesesDisponiveis] = useState([]);
   const [mesSelecionado, setMesSelecionado] = useState(null);
 
-  const selectMes = () => {
-    buscaMesNaData(registros);
-  };
-
-  const buscaMesNaData = (registrosParaBusca) => {
-    const monthsInData = registrosParaBusca.map((registro) => {
-      let [dia, mes, ano] = registro.data.split("/").map(Number);
-      return mes;
-    });
-
-    const uniqueMonths = [...new Set(monthsInData)];
-
-    const availableMonths = monthsList
-      .filter((month) => uniqueMonths.includes(month.value))
-      .map((month) => ({
-        ...month,
-        onPress: () => setMesSelecionado(month.value),
-      }));
-
-    setMesesDisponiveis(availableMonths);
-  };
-
-  const monthsList = [
-    { value: 1, label: "Janeiro" },
-    { value: 2, label: "Fevereiro" },
-    { value: 3, label: "Março" },
-    { value: 4, label: "Abril" },
-    { value: 5, label: "Maio" },
-    { value: 6, label: "Junho" },
-    { value: 7, label: "Julho" },
-    { value: 8, label: "Agosto" },
-    { value: 9, label: "Setembro" },
-    { value: 10, label: "Outubro" },
-    { value: 11, label: "Novembro" },
-    { value: 12, label: "Dezembro" },
+  const monthNames = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
+
+  const uniqueMonthsOptions = uniqueMonths.map((month) => ({
+    label: monthNames[month - 1],
+    value: month,
+  }));
+
+  const handleMonthSelect = (selectedMonth) => {
+    setMesSelecionado(selectedMonth.value);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -143,9 +156,13 @@ const AlterarHora = () => {
 
         <View style={styles.containerHeader}>
           <View style={styles.select}>
-            <Pressable style={styles.selectButton} onPress={selectMes}>
-              {/* <Text style={styles.selectText}>Selecione o Mes</Text> */}
-              <SelectDropDown options={mesesDisponiveis} />
+            <Pressable style={styles.selectButton} onPress={uniqueMonths}>
+              <SelectDropDown
+                options={uniqueMonthsOptions.map((month) => ({
+                  ...month,
+                  onSelect: handleMonthSelect,
+                }))}
+              />
             </Pressable>
           </View>
         </View>

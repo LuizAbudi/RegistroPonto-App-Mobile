@@ -16,11 +16,22 @@ const SelectDropDown = ({ options }) => {
   };
 
   const getMaxWidth = () => {
-    const padding = 20; // 10 padding on each side
-    const textWidths = options.map(
-      (option) => option.label.length * 10 + padding
-    ); // Estimativa simples
-    return Math.max(...textWidths);
+    if (!options || options.length === 0) return 150; // largura padrão
+
+    const padding = 20;
+    const textWidths = options.map((option) => {
+      // Verifique se a opção possui um rótulo e que é uma string antes de acessar sua propriedade length
+      return option && typeof option.label === "string"
+        ? option.label.length * 10 + padding
+        : 0;
+    });
+
+    const maxComputedWidth = Math.max(...textWidths);
+
+    // Evitar -Infinity ou valores muito pequenos
+    return isFinite(maxComputedWidth) && maxComputedWidth > 50
+      ? maxComputedWidth
+      : 150;
   };
 
   const dropdownWidth = getMaxWidth();
@@ -48,7 +59,12 @@ const SelectDropDown = ({ options }) => {
             <TouchableOpacity
               style={styles.option}
               key={index}
-              onPress={option.onPress}
+              onPress={() => {
+                handleToggleMenu();
+                if (option.onSelect) {
+                  option.onSelect(option);
+                }
+              }}
             >
               <Text style={styles.TextDrop}>{option.label}</Text>
             </TouchableOpacity>

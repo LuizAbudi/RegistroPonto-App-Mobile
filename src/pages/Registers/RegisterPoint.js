@@ -5,6 +5,7 @@ import MenuThreeDots from "../../components/MenuThreeDots";
 import { AuthContext } from "../../contexts/auth";
 import { useNavigation } from "@react-navigation/native";
 import { RegisterDailyContext } from "../../contexts/registersDaily";
+import { RegistersTestsContext } from "../../contexts/RegistrosTests";
 
 export function RegisterPoint() {
   const date = new Date().toLocaleDateString("pt-BR");
@@ -17,6 +18,16 @@ export function RegisterPoint() {
     setHoraEntrada,
     setHoraSaida,
   } = useContext(RegisterDailyContext);
+
+  const {
+    registros,
+    setRegistros,
+    uniqueMonths,
+    totalHours,
+    totalDays,
+    getMesAtual,
+    mesAtual,
+  } = useContext(RegistersTestsContext);
 
   function onClickButtonRegister() {
     registraPonto();

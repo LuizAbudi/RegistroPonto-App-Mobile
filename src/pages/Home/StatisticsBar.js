@@ -8,64 +8,20 @@ import { RegistersTestsContext } from "../../contexts/RegistrosTests";
 
 export function StatisticsBar() {
   const { horaEntrada, horaSaida } = useContext(RegisterDailyContext);
-  const { registros, setRegistros } = useContext(RegistersTestsContext);
-  const [mesAtual, setMesAtual] = useState({ nome: null, numero: null });
-
-  //console.log(registros);
+  const {
+    registros,
+    setRegistros,
+    uniqueMonths,
+    totalHours,
+    totalDays,
+    getMesAtual,
+    mesAtual,
+  } = useContext(RegistersTestsContext);
 
   const isFocused = useIsFocused();
 
-  function formatarHora(hEntrada, hSaida) {
-    let horaEntrada = hEntrada.split(":");
-    let horaSaida = hSaida.split(":");
-    let hora = horaSaida[0] - horaEntrada[0];
-    let minuto = horaSaida[1] - horaEntrada[1];
-    let segundo = horaSaida[2] - horaEntrada[2];
-    if (segundo < 0) {
-      segundo += 60;
-      minuto--;
-    }
-    if (minuto < 0) {
-      minuto += 60;
-      hora--;
-    }
-    if (hora < 0) {
-      hora += 24;
-    }
-
-    const totalHoras = hora + minuto / 60 + segundo / 3600;
-
-    return totalHoras;
-  }
-
-  const getMesAtual = () => {
-    const data = new Date();
-    const mesNome = data.toLocaleDateString("pt-BR", { month: "long" });
-    const mesNumber = data.getMonth() + 1;
-    setMesAtual({ nome: mesNome, numero: mesNumber });
-  };
-
-  const registrosDoMesAtual = registros.filter((registro) => {
-    if (!registro.data || typeof registro.data !== "string") return false;
-    let [dia, mes, ano] = registro.data.split("/").map(Number);
-    return mes === mesAtual.numero;
-  });
-
-  const totalDiasTrabalhados = () => {
-    return registrosDoMesAtual.length;
-  };
-
-  const totalHorasTrabalhadas = () => {
-    let totalHoras = 0;
-    registrosDoMesAtual.forEach((registro) => {
-      totalHoras += formatarHora(registro.horaEntrada, registro.horaSaida);
-    });
-
-    return totalHoras;
-  };
-
-  const progressoHoras = (totalHorasTrabalhadas() / 240) * 100;
-  const progressoDias = (totalDiasTrabalhados() / 30) * 100;
+  const progressoHoras = (totalHours / 240) * 100;
+  const progressoDias = (totalDays / 30) * 100;
 
   //###################################################
   //Animação barra de progresso
@@ -165,7 +121,7 @@ export function StatisticsBar() {
           />
         </Animated.View>
         <Text style={styles.textItem}>
-          Total de dias Trabalhados: {totalDiasTrabalhados()} dias
+          Total de dias Trabalhados: {totalDays} dias
         </Text>
       </View>
       <View style={styles.Registros}>
@@ -188,7 +144,7 @@ export function StatisticsBar() {
           />
         </Animated.View>
         <Text style={styles.textItem}>
-          Total de horas Trabalhadas: {totalHorasTrabalhadas().toFixed(2)} horas
+          Total de horas Trabalhadas: {totalHours.toFixed(2)} horas
         </Text>
       </View>
     </View>
