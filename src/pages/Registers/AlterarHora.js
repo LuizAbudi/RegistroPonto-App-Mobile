@@ -16,24 +16,22 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { RegistrosFuncionario } from "../../utils/registros";
+
 import DateTimePicker from "@react-native-community/datetimepicker";
 import SelectDropDown from "../../components/SelectDropDown";
 
+import { RegistersTestsContext } from "../../contexts/RegistrosTests";
+
 const AlterarHora = () => {
-  useEffect(() => {
-    const novosRegistros = RegistrosFuncionario();
-    setRegistros(novosRegistros);
-    buscaMesNaData(novosRegistros);
-  }, []);
+  const { registros, setRegistros } = useContext(RegistersTestsContext);
+
+  console.log(registros);
 
   const navigation = useNavigation();
 
   const handleBack = () => {
     navigation.goBack();
   };
-
-  const [registros, setRegistros] = useState([]);
 
   const [modalSelectMes, setModalSelectMes] = useState(false);
 

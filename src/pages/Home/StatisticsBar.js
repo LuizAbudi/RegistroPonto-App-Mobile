@@ -1,13 +1,17 @@
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
-import { RegistrosFuncionario } from "../../utils/registros";
+// import { RegistrosFuncionario } from "../../utils/registros";
 import { LinearGradient } from "expo-linear-gradient";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { RegisterDailyContext } from "../../contexts/registersDaily";
+import { RegistersTestsContext } from "../../contexts/RegistrosTests";
 
 export function StatisticsBar() {
   const { horaEntrada, horaSaida } = useContext(RegisterDailyContext);
+  const { registros, setRegistros } = useContext(RegistersTestsContext);
   const [mesAtual, setMesAtual] = useState({ nome: null, numero: null });
+
+  //console.log(registros);
 
   const isFocused = useIsFocused();
 
@@ -33,14 +37,6 @@ export function StatisticsBar() {
 
     return totalHoras;
   }
-
-  const [registros, setRegistros] = useState([]);
-
-  useEffect(() => {
-    const novosRegistros = RegistrosFuncionario();
-    setRegistros(novosRegistros);
-    console.log(novosRegistros);
-  }, []);
 
   const getMesAtual = () => {
     const data = new Date();
@@ -243,6 +239,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textItemEntrada: {
+    color: "#0DA6C2",
+    fontSize: 17,
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginLeft: 10,
+  },
+  textItemSaida: {
     color: "#0DA6C2",
     fontSize: 17,
     justifyContent: "center",
