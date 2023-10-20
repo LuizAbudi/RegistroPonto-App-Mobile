@@ -58,9 +58,6 @@ Uma nova janela ou aba deve abrir no seu navegador padrão, e você deve ver um 
 Luiz Gustavo Pasini Abudi 
 
 ---
-Para adicionar uma seção de "Todos os Direitos Reservados" no README, geralmente é suficiente incluir uma seção de "Licença" ou "Copyright" perto do final do documento. Aqui está um exemplo de como você pode fazer isso:
-
----
 
 ## Licença
 
